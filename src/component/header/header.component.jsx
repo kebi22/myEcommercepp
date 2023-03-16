@@ -9,34 +9,35 @@ import { createStructuredSelector } from "reselect";
 import CartDropdown from "../cart-dropdown/cart-dropdown.component";
 import { selectCurrentuser } from "../../redux/user/user.selector";
 import { selectCartHidden } from "../../redux/cart/cart.selector";
+import { HeaderContainer,LogoContainer,OptionsContainer,OptionLink,OptionDiv } from "./header.styles";
 const Header=({currentUser,hidden})=>(
-    <div className="header">
-<Link to="/" className="logocontainer">
+    <HeaderContainer>
+<LogoContainer to="/">
     <Logo className="logo "/>
 
-</Link>
-<div className="options">
-<Link to="/shop" className="option">
+</LogoContainer>
+<OptionsContainer>
+<OptionLink to="/shop">
    SHOP
 
-</Link>
-<Link to="/" className="option">
+</OptionLink>
+<OptionLink to="/" >
    CONTACT 
 
-</Link>
-<Link>{
+</OptionLink>
+{
 currentUser ?
-<div className="option" onClick={()=>auth.signOut()}>SIGN OUT</div>
+<OptionLink as='div'  onClick={()=>auth.signOut()}>SIGN OUT</OptionLink>
 :
-<Link to="/signin" className="option">SIGN IN</Link>
+<OptionLink to="/signin" >SIGN IN</OptionLink>
 }
-</Link>
+
 <CartIcon/>
-</div>
+</OptionsContainer>
 {hidden ? null
 :
 <CartDropdown/>}
-    </div>
+    </HeaderContainer>
 )
 const mapStateToProbs= createStructuredSelector({
     currentUser:selectCurrentuser,
