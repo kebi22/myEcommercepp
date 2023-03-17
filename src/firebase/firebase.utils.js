@@ -19,6 +19,7 @@ const Config={
     measurementId: "G-R7YM6R8YTC"
 
 };
+
 export const createUserProfileDocument=async(userAuth, ...additionalData)=>{
     const userRef=firestore.doc(`users/${userAuth.uid}`)
     const snapShot= await userRef.get();
@@ -45,6 +46,17 @@ export const createUserProfileDocument=async(userAuth, ...additionalData)=>{
     }
 
     return userRef;
+}
+export const addCollectionAnddocuments=async(collectionKey,objectsToAdd)=>{
+    const collectionRef=firestore.collection(collectionKey)
+
+    const batch =firestore.batch();
+    objectsToAdd.forEach(obj=>{
+        const newDocRef=collectionRef.doc()
+        console.log(newDocRef)
+       batch.set(newDocRef,obj);
+    });
+  return await  batch.commit()
 }
 firebase.initializeApp(Config);
 export const auth=firebase.auth();
