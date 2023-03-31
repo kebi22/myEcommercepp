@@ -1,6 +1,6 @@
 
 import './App.css';
-import React from 'react';
+import React, { useEffect } from 'react';
 import HomePage from './pages/homepage/homePage.component';
 import ShopPage from './pages/shop/shop.component';
 import { Switch, Route, Redirect} from 'react-router-dom';
@@ -16,39 +16,32 @@ import CheckOutPage from './pages/checkout/checkout.component';
 
 
 
-class App extends React.Component {
+const App = ({ currentUser, setCurrentUser }) => {
+  useEffect(() => {
+    let unsubscribeFromAuth = null;
 
-  unsubscribeFromAuth=null;
-  componentDidMount(){
-    const {setCurrentUser}= this.props;
-   this.unsubscribeFromAuth= auth.onAuthStateChanged(async userAuth=>{
-    if(userAuth){
-      const userRef =await createUserProfileDocument(userAuth);
-      userRef.onSnapshot(snapShot=>{
-        setCurrentUser({
-          currentUser:{
-            id:snapShot.id,
-            ...snapShot.data()
-          }
+    unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
+      if (userAuth) {
+        const userRef = await createUserProfileDocument(userAuth);
+        userRef.onSnapshot((snapShot) => {
+          setCurrentUser({
+            currentUser: {
+              id: snapShot.id,
+              ...snapShot.data(),
+            },
+          });
         });
-
-      })
-
-    }
-    else{
-     setCurrentUser(userAuth)
-
-       }
-     
-
-     
-     
+      } else {
+        setCurrentUser(userAuth);
+      }
     });
-  }
-  componentWillUnmount(){
-    this.unsubscribeFromAuth();
-  }
-  render(){
+
+ return () => {
+      unsubscribeFromAuth();
+    };
+  }, [setCurrentUser]);
+
+  
     return (
       <div >
         <Header />
@@ -56,7 +49,7 @@ class App extends React.Component {
         <Route  exact path='/' component={HomePage} />
         <Route   path='/shop' component={ShopPage} />
         <Route  exact path='/checkout' component={CheckOutPage} />
-        <Route  exact path='/signin' render={()=>this.props.currentUser? 
+        <Route  exact path='/signin' render={()=>currentUser? 
           (<Redirect to='/'/>)
           :(<SignInAndSignUp/>) } />
       
@@ -65,7 +58,7 @@ class App extends React.Component {
 
   }
   
-}
+
 const mapStateToProbs=createStructuredSelector({
   currentUser:selectCurrentuser,
 
